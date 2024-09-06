@@ -7,3 +7,24 @@
     opacity: .6;
     cursor: not-allowed;
 }
+
+.darkened .absolute {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    transition: background-color 0.3s ease;
+}
+
+.darkened::before {
+    content: attr(data-number);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    z-index: 1;
+}
+
+.active_set {
+    background: #565555;
+    border: 1px solid #3F991D;
+}

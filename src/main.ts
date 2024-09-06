@@ -1,5 +1,6 @@
 import './style.css'
-import {firstButtonSet, secondButtonSet} from "./set.ts";
+import {firstButtonSet, previewCards, secondButtonSet} from "./set.ts";
+import {ICard} from "./types.ts";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="bg-[#2f2f2f] text-white h-screen w-full flex">
@@ -18,10 +19,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </div>
     </div>
     <div class="flex flex-col justify-between w-full">
-        <div id="card"  class="p-7 flex gap-[30px] flex-wrap overflow-auto">
+        <div id="card" class="p-7 flex gap-[30px] flex-wrap overflow-auto">
             
         </div>
-        <div class="bg-[#8e8e8e] h-[13%]">
+        <div id="preview_card" class="flex items-center gap-4 pl-16 py-2 bg-[#8e8e8e] h-[13%]">
         
         </div>
     </div>
@@ -36,3 +37,37 @@ document.querySelector<HTMLElement>('#set_second')?.addEventListener('click', ()
   secondButtonSet(document.querySelector<HTMLElement>('#card')!);
 });
 
+document.querySelector<HTMLElement>('#preview_card')?.addEventListener('click', (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  const cardElement = target.closest('.relative');
+  if (cardElement) {
+    const cardId = target.closest('.relative')?.id?.replace('card_', '');
+    console.log(cardId)
+    if (cardId) {
+      const index = previewCards.findIndex((previewCard: ICard) => previewCard.id === parseInt(cardId));
+
+      if (index !== -1) {
+        previewCards.splice(index, 1);
+
+        const updatedPreviewBlock = document.querySelector('#preview_card') as HTMLDivElement;
+        updatedPreviewBlock.innerHTML = previewCards.map((prev) => `
+          <div id="card_${prev.id}" class="relative w-[100px] h-[100px] flex items-center justify-center cursor-pointer group">
+            <img src="../public/delete.png" alt="delete" class="absolute left-1 top-1">
+            <img src="${prev.img}" alt="${prev.alt}" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity duration-300"></div>
+          </div>
+        `).join('');
+
+        const mainCardElement = document.querySelector<HTMLElement>(`#card_${cardId}`);
+        if (mainCardElement) {
+          mainCardElement.classList.remove('darkened');
+
+          const overlay: HTMLDivElement | null = mainCardElement.querySelector('.absolute');
+          if (overlay) {
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+          }
+        }
+      }
+    }
+  }
+});
